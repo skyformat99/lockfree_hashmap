@@ -2,6 +2,7 @@
 #include "lockfree_hashmap.h"
 #include <assert.h>
 #include <thread>
+#include <mutex>
 
 static unsigned hash(void* p)
 {
@@ -31,6 +32,7 @@ TEST(lockfree_hashmap, set)
 	for (size_t i = 0; i < _countof(threads); i++) {
 		threads[i].join();
 	}
+	ASSERT_EQ(16 * 512 - 16, lockfree_hashmap_size(hashmap));
 	lockfree_hashmap_destory(hashmap);
 }
 
@@ -44,5 +46,6 @@ TEST(lockfree_hashmap, set_0)
 		EXPECT_EQ((void*)-1, lockfree_hashmap_set(hashmap, (void*)i, NULL, true));
 		EXPECT_EQ(NULL, lockfree_hashmap_get(hashmap, (void*)i));
 	}
+	ASSERT_EQ(512, lockfree_hashmap_size(hashmap));
 	lockfree_hashmap_destory(hashmap);
 }

@@ -188,3 +188,8 @@ extern "C" void* lockfree_hashmap_get(struct lockfree_hashmap* hashmap, void* ke
 
 	return result;
 }
+
+extern "C" unsigned lockfree_hashmap_size(struct lockfree_hashmap* hashmap)
+{
+	return hashmap->key_count.load();
+}
