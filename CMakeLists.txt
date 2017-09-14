@@ -1,0 +1,50 @@
+cmake_minimum_required(VERSION 3.5)
+set(CMAKE_SUPPRESS_REGENERATION TRUE CACHE BOOL "Disable Zero Check Project")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_C_STANDARD 11)
+
+set(PROJ_NAME "lockfree_hashmap")
+project(${PROJ_NAME})
+
+if (NOT MSVC)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fpermissive -fsanitize=address")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fpermissive -fsanitize=address")
+endif()
+
+set(gtest_force_shared_crt ON CACHE BOOL "")
+add_subdirectory(googletest)
+
+aux_source_directory(test PROJ_TEST_SRC)
+aux_source_directory(src PROJ_SRC)
+
+include_directories(.)
+include_directories(test)
+include_directories(src)
+include_directories(googletest/include)
+
+add_executable(${PROJ_NAME} ${PROJ_SRC} ${PROJ_TEST_SRC})
+target_link_libraries(${PROJ_NAME} gtest)
+
+if (NOT MSVC)
+	target_link_libraries(${PROJ_NAME} pthread)
+endif()
+
+message(STATUS *******************************************************)
+message(STATUS CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME})
+message(STATUS CMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION})
+message(STATUS CMAKE_HOST_SYSTEM_NAME=${CMAKE_HOST_SYSTEM_NAME})
+message(STATUS CMAKE_GENERATOR=${CMAKE_GENERATOR})
+message(STATUS CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+message(STATUS CMAKE_C_COMPILER=${CMAKE_C_COMPILER})
+message(STATUS CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
+message(STATUS CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES=${CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES})
+message(STATUS CMAKE_CXX_STANDARD_LIBRARIES=${CMAKE_CXX_STANDARD_LIBRARIES})
+message(STATUS CMAKE_C_FLAGS=${CMAKE_C_FLAGS})
+message(STATUS CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS})
+message(STATUS CMAKE_SHARED_LINKER_FLAGS=${CMAKE_SHARED_LINKER_FLAGS})
+message(STATUS CMAKE_MODULE_LINKER_FLAGS=${CMAKE_MODULE_LINKER_FLAGS})
+message(STATUS CMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS})
+message(STATUS CMAKE_BINARY_DIR=${CMAKE_BINARY_DIR})
+message(STATUS *******************************************************)
