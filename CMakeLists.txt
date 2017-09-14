@@ -27,10 +27,6 @@ include_directories(googletest/include)
 add_executable(${PROJ_NAME} ${PROJ_SRC} ${PROJ_TEST_SRC})
 target_link_libraries(${PROJ_NAME} gtest)
 
-if (NOT MSVC)
-	target_link_libraries(${PROJ_NAME} pthread)
-endif()
-
 message(STATUS *******************************************************)
 message(STATUS CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME})
 message(STATUS CMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION})
