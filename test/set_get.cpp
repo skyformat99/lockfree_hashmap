@@ -12,7 +12,7 @@ static void test_thread(struct lockfree_hashmap* hashmap, int index)
 {
 	std::this_thread::sleep_for(std::chrono::microseconds(5));
 
-	for (size_t i = index + 1; i < index + 512; i++)
+	for (int i = index + 1; i < index + 512; i++)
 	{
 		EXPECT_EQ(NULL, lockfree_hashmap_set(hashmap, (void*)i, (void*)-1, false));
 		EXPECT_EQ((void*)-1, lockfree_hashmap_set(hashmap, (void*)i, (void*)i, true));

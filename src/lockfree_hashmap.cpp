@@ -24,7 +24,7 @@ struct lockfree_hashmap
 	std::atomic<int> ref;
 };
 
-struct lockfree_hashmap* lockfree_hashmap_create(unsigned prealloc_size, hash_function* hash_fn)
+extern "C" struct lockfree_hashmap* lockfree_hashmap_create(unsigned prealloc_size, hash_function* hash_fn)
 {
 	struct lockfree_hashmap* hashmap = new struct lockfree_hashmap;
 	if (!hashmap)
@@ -45,7 +45,7 @@ struct lockfree_hashmap* lockfree_hashmap_create(unsigned prealloc_size, hash_fu
 	return hashmap;
 }
 
-void lockfree_hashmap_destory(struct lockfree_hashmap* hashmap)
+extern "C" void lockfree_hashmap_destory(struct lockfree_hashmap* hashmap)
 {
 	if (!hashmap)
 		return;
@@ -145,7 +145,7 @@ static int lockfree_hashmap_set_lock(struct lockfree_hashmap* hashmap)
 }
 
 
-void* lockfree_hashmap_set(struct lockfree_hashmap* hashmap, void* key, void* value, int overwrite)
+extern "C" void* lockfree_hashmap_set(struct lockfree_hashmap* hashmap, void* key, void* value, int overwrite)
 {
 	lockfree_hashmap_set_lock(hashmap);
 
@@ -187,7 +187,7 @@ static void* lockfree_hashmap_get_real(struct lockfree_hashmap* hashmap, void* k
 	}
 }
 
-void* lockfree_hashmap_get(struct lockfree_hashmap* hashmap, void* key)
+extern "C" void* lockfree_hashmap_get(struct lockfree_hashmap* hashmap, void* key)
 {
 	lockfree_hashmap_get_lock(hashmap);
 
