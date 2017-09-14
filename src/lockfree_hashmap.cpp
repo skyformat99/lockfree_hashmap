@@ -58,8 +58,8 @@ extern "C" void lockfree_hashmap_destory(struct lockfree_hashmap* hashmap)
 	delete hashmap;
 }
 
-static void* lockfree_hashmap_set_real(struct lockfree_hashmap_node* node_array, unsigned node_array_size, hash_function* hash_fn,
-	void* key, void* value, int overwrite)
+static void* lockfree_hashmap_set_real(int* is_newkey, struct lockfree_hashmap_node* node_array, unsigned node_array_size,
+	hash_function* hash_fn, void* key, void* value, int overwrite)
 {
 	for (unsigned idx = hash_fn(key); ; idx++)
 	{
@@ -72,6 +72,10 @@ static void* lockfree_hashmap_set_real(struct lockfree_hashmap_node* node_array,
 		{
 			if (exp_key != key)
 				continue;
+		}
+		else
+		{
+			*is_newkey = true;
 		}
 
 		void* exp_value = NULL;
@@ -104,8 +108,10 @@ static int lockfree_hashmap_resize(struct lockfree_hashmap* hashmap)
 		struct lockfree_hashmap_node* node = &hashmap->node_array[i];
 		void* key = node->key.load();
 		void* value = node->value.load();
-		void* result = lockfree_hashmap_set_real(node_array, node_array_size, hashmap->hash_fn, key, value, false);
+		int is_newkey = false;
+		void* result = lockfree_hashmap_set_real(&is_newkey, node_array, node_array_size, hashmap->hash_fn, key, value, false);
 		assert(result == NULL); (result);
+		assert(is_newkey == true); (is_newkey);
 	}
 
 	delete[] hashmap->node_array;
@@ -147,10 +153,13 @@ static int lockfree_hashmap_set_lock(struct lockfree_hashmap* hashmap)
 
 extern "C" void* lockfree_hashmap_set(struct lockfree_hashmap* hashmap, void* key, void* value, int overwrite)
 {
+	assert(key);
+
 	lockfree_hashmap_set_lock(hashmap);
 
-	void* result = lockfree_hashmap_set_real(hashmap->node_array, hashmap->node_array_size, hashmap->hash_fn, key, value, overwrite);
-	if (result)
+	int is_newkey = false;
+	void* result = lockfree_hashmap_set_real(&is_newkey, hashmap->node_array, hashmap->node_array_size, hashmap->hash_fn, key, value, overwrite);
+	if (!is_newkey)
 		hashmap->key_count--;
 	hashmap->ref--;
 

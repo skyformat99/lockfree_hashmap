@@ -37,3 +37,16 @@ TEST(lockfree_hashmap, set)
 	lockfree_hashmap_destory(hashmap);
 }
 
+TEST(lockfree_hashmap, set_0)
+{
+	struct lockfree_hashmap* hashmap = lockfree_hashmap_create(16, hash);
+	for (int i = 1; i <= 512; i++)
+	{
+		EXPECT_EQ(NULL, lockfree_hashmap_set(hashmap, (void*)i, (void*)-1, false));
+		EXPECT_EQ((void*)-1, lockfree_hashmap_set(hashmap, (void*)i, NULL, true));
+		EXPECT_EQ(NULL, lockfree_hashmap_set(hashmap, (void*)i, (void*)-1, false));
+		EXPECT_EQ((void*)-1, lockfree_hashmap_set(hashmap, (void*)i, NULL, true));
+		EXPECT_EQ(NULL, lockfree_hashmap_get(hashmap, (void*)i));
+	}
+	lockfree_hashmap_destory(hashmap);
+}
